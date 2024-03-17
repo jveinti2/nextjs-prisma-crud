@@ -1,4 +1,8 @@
-export default function Card({ title, content, createdAt, updatedAt }) {
+import { HiTrash } from "react-icons/hi2";
+import ModalForm from "./ModalForm";
+import { useNotes } from "@/context/NoteContext";
+export default function Card({ id, title, content, createdAt, updatedAt }) {
+  const { deleteNote } = useNotes();
   return (
     <>
       <a
@@ -19,6 +23,15 @@ export default function Card({ title, content, createdAt, updatedAt }) {
             {updatedAt}
           </span>
         </p>
+        <div className="flex gap-1 mt-2">
+          <ModalForm id={id} titleNote={title} contentNote={content} />
+          <button
+            className="bg-red-500 text-white rounded-md p-2 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+            onClick={() => deleteNote(id)}
+          >
+            <HiTrash />
+          </button>
+        </div>
       </a>
     </>
   );

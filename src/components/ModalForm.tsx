@@ -1,29 +1,53 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNotes } from "@/context/NoteContext";
+import { HiMiniPlus, HiMiniPencil } from "react-icons/hi2";
 
-export default function ModalForm() {
+export default function ModalForm({ id, titleNote, contentNote }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const { createNote } = useNotes();
+  const { createNote, updateNote } = useNotes();
+
+  useEffect(() => {
+    if (isEdit) {
+      setTitle(titleNote);
+      setContent(contentNote);
+    }
+  }, [isEdit]);
 
   return (
     <>
-      <button
-        className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Agregar nota
-      </button>
+      {id ? (
+        <button
+          className=" bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm p-2 rounded shadow hover:shadow-lg outline-none focus:outline-none "
+          onClick={() => {
+            setIsModalOpen(true), setIsEdit(true);
+          }}
+        >
+          <HiMiniPencil />
+        </button>
+      ) : (
+        <button
+          className=" bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm p-2 rounded shadow hover:shadow-lg outline-none focus:outline-none "
+          onClick={() => setIsModalOpen(true)}
+        >
+          <HiMiniPlus />
+        </button>
+      )}
       <div>
         {isModalOpen ? (
           <>
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
-                await createNote({ title, content });
+                if (isEdit) {
+                  await updateNote({ id, title, content });
+                } else {
+                  await createNote({ title, content });
+                }
                 setIsModalOpen(false);
               }}
             >
@@ -57,6 +81,7 @@ export default function ModalForm() {
                           type="text"
                           placeholder="Título de la nota"
                           onChange={(e) => setTitle(e.target.value)}
+                          value={title}
                         />
                       </div>
                       <div className="mb-4">
@@ -71,6 +96,7 @@ export default function ModalForm() {
                           id="content"
                           placeholder="Contenido de la nota"
                           onChange={(e) => setContent(e.target.value)}
+                          value={content}
                         ></textarea>
                       </div>
                     </div>

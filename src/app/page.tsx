@@ -5,7 +5,7 @@ import ModalForm from "@/components/ModalForm";
 import { useNotes } from "@/context/NoteContext";
 
 function HomePage() {
-  const { notes: notesDb, loadNotes } = useNotes();
+  const { notes: notesDb, loadNotes, getNoteById } = useNotes();
 
   useEffect(() => {
     loadNotes();
@@ -20,10 +20,11 @@ function HomePage() {
           </h1>
           <ModalForm />
         </div>
-        <div className="space-y-3 grid   md:flex md:gap-3">
+        <div className="grid grid-cols-4 gap-2">
           {notesDb.map((note) => (
             <div key={note.id}>
               <Card
+                id={note.id}
                 title={note.title}
                 content={note.content}
                 createdAt={note.createdAt}

@@ -6,10 +6,14 @@ export const NoteContext = createContext<{
   notes: any[];
   loadNotes: () => Promise<void>;
   createNote: (note: any) => Promise<void>;
+  updateNote: (note: any) => Promise<void>;
+  deleteNote: (id: any) => Promise<void>;
 }>({
   notes: [],
   loadNotes: async () => {},
   createNote: async (note: any) => {},
+  updateNote: async (note: any) => {},
+  deleteNote: async (id: any) => {},
 });
 
 export const useNotes = () => {
@@ -41,8 +45,32 @@ export const NoteProvider = ({ children }: { children: React.ReactNode }) => {
     setNotes([...notes, newNote]);
   }
 
+  async function updateNote(note: any) {
+    const res = await fetch(`/api/notes/${note.id}`, {
+      method: "PUT",
+      body: JSON.stringify(note),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const updatedNote = await res.json();
+    setNotes(
+      notes.map((note) => (note.id === updatedNote.id ? updatedNote : note))
+    );
+  }
+
+  async function deleteNote(id: any) {
+    const res = await fetch(`/api/notes/${id}`, {
+      method: "DELETE",
+    });
+    const data = await res.json();
+    setNotes(notes.filter((note) => note.id !== id));
+  }
+
   return (
-    <NoteContext.Provider value={{ notes, loadNotes, createNote }}>
+    <NoteContext.Provider
+      value={{ notes, loadNotes, createNote, updateNote, deleteNote }}
+    >
       {children}
     </NoteContext.Provider>
   );
